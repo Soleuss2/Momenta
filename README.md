@@ -1,4 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Momenta
+
+Momenta is a private digital journal for couples to capture, organize, and revisit the moments that make their story unique.
+
+The experience is designed around shared memories rather than metrics, with calm visual storytelling, responsive layouts, and small interactive details throughout the journal.
+
+## Features
+
+- Public landing page with animated sections and a click-to-open surprise envelope
+- Memory highlights with filters and detail modals
+- Photo and video capture workspace
+- Compilation studio for turning moments into a replayable story
+- Shared calendar for plans and important dates
+- Private diary with mood selection and editable past entries
+- Weekly compilation preview
+- Interactive constellation of shared memories
+- Light and night themes
+- Responsive layouts for desktop and mobile
+
+## Tech Stack
+
+- Next.js 16 with the App Router
+- React 19 and TypeScript
+- Tailwind CSS 4
+- Framer Motion
+- Lucide React
+
+## Getting Started
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Start the development server:
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Available Scripts
+
+```bash
+pnpm dev       # Start the development server
+pnpm lint      # Run ESLint
+pnpm build     # Create a production build
+pnpm start     # Start the production server
+```
+
+## Main Routes
+
+- `/public` - Public introduction and product experience
+- `/public/auth` - Sign-in and registration preview
+- `/users` - Shared memory journal
+- `/users/capture` - Capture workspace
+- `/users/studio` - Compilation studio
+- `/users/calendar` - Shared calendar
+- `/users/diary` - Private diary
+- `/users/settings` - Journal settings
+
+## Project Status
+
+Momenta is currently a front-end design preview. The journal interactions and content are local UI demonstrations; authentication, persistence, media uploads, and video generation can be connected as the product evolves.
 
 ## Getting Started
 
