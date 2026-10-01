@@ -16,7 +16,7 @@ type NavLink = { href: string; label: string; icon: LucideIcon };
 type NavContent = { homeHref: string; actionHref: string | null; actionLabel: string | null; actionIcon: LucideIcon | null; links: NavLink[] };
 
 const navContent = {
-  public: { homeHref: "/public", actionHref: "/public/auth", actionLabel: "Sign in", actionIcon: LogIn, links: [{ href: "/public#why", label: "Why it matters", icon: BookHeart }, { href: "/public#story", label: "Our story", icon: Heart }] },
+  public: { homeHref: "/public", actionHref: "/auth", actionLabel: "Sign in", actionIcon: LogIn, links: [{ href: "/public#why", label: "Why it matters", icon: BookHeart }, { href: "/public#story", label: "Our story", icon: Heart }] },
   auth: { homeHref: "/public", actionHref: "/public", actionLabel: "Back to home", actionIcon: ArrowLeft, links: [] },
   journal: { homeHref: "/users", actionHref: "/public", actionLabel: "Log out", actionIcon: LogOut, links: [{ href: "/users", label: "Memories", icon: BookHeart }, { href: "/users/capture", label: "Capture", icon: ImagePlus }, { href: "/users/memories", label: "Uploaded media", icon: Images }, { href: "/users/studio", label: "Studio", icon: Sparkles }, { href: "/users/calendar", label: "Calendar", icon: CalendarDays }, { href: "/users/diary", label: "Diary", icon: NotebookPen }, { href: "/users/settings", label: "Settings", icon: Settings2 }] },
 } satisfies Record<SiteNavProps["variant"], NavContent>;

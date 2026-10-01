@@ -103,7 +103,7 @@ export default function MemoriesPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!active) return;
       if (!session?.user) {
-        router.replace("/public/auth?next=/users/memories");
+        router.replace("/auth?next=/users/memories");
         return;
       }
       activeUserId = session.user.id;
@@ -137,7 +137,7 @@ export default function MemoriesPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") {
         void clearOfflineSnapshots().catch((snapshotError: unknown) => console.error("Unable to clear offline memories.", snapshotError));
-        router.replace("/public/auth?next=/users/memories");
+        router.replace("/auth?next=/users/memories");
       }
     });
     window.addEventListener("online", onOnline);
