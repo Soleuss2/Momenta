@@ -9,6 +9,8 @@ The experience is designed around shared memories rather than metrics, with calm
 - Public landing page with animated sections and a click-to-open surprise envelope
 - Memory highlights with filters and detail modals
 - Photo and video capture workspace
+- Confirmed photo and video uploads with a personal, date-sorted gallery
+- Offline gallery snapshots with full photos and video previews
 - Compilation studio for turning moments into a replayable story
 - Shared calendar for plans and important dates
 - Private diary with mood selection and editable past entries
@@ -24,6 +26,8 @@ The experience is designed around shared memories rather than metrics, with calm
 - Tailwind CSS 4
 - Framer Motion
 - Lucide React
+- Supabase Auth and Storage
+- Exifr for embedded image capture dates
 
 ## Getting Started
 
@@ -56,6 +60,7 @@ pnpm start     # Start the production server
 - `/public/auth` - Sign-in and registration preview
 - `/users` - Shared memory journal
 - `/users/capture` - Capture workspace
+- `/users/memories` - Uploaded media gallery and offline snapshot
 - `/users/studio` - Compilation studio
 - `/users/calendar` - Shared calendar
 - `/users/diary` - Private diary
@@ -63,7 +68,9 @@ pnpm start     # Start the production server
 
 ## Project Status
 
-Momenta is currently a front-end design preview. The journal interactions and content are local UI demonstrations; authentication, persistence, media uploads, and video generation can be connected as the product evolves.
+The capture flow uses Supabase Auth and Storage. Apply `supabase/migrations/20261001000000_captured_media.sql` to create the private `memories` bucket, per-user media table, and access policies. The browser client requires `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the local environment.
+
+The offline worker is registered in production builds only. To test offline behavior locally, build and start the production app with `pnpm build` and `pnpm start` on localhost (or serve it over HTTPS). Gallery snapshots are stored per account in IndexedDB, limited to 250 MB per browser, and cleared when the user signs out. The journal highlights, compilation studio, calendar, and diary remain design previews.
 
 ## Getting Started
 

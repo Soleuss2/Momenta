@@ -1,9 +1,12 @@
 "use client";
 
-import { ArrowLeft, BookHeart, CalendarDays, Heart, ImagePlus, LogIn, LogOut, Moon, NotebookPen, Settings2, Sparkles, Sun, type LucideIcon } from "lucide-react";
+import { ArrowLeft, BookHeart, CalendarDays, Heart, ImagePlus, Images, LogIn, LogOut, Moon, NotebookPen, Settings2, Sparkles, Sun, type LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
 import { useTheme } from "../app/theme-provider";
+import { clearOfflineSnapshots } from "../lib/offline-media";
+import { createClient } from "../lib/supabase/client";
 
 type SiteNavProps = {
   variant: "public" | "auth" | "journal";
@@ -15,13 +18,25 @@ type NavContent = { homeHref: string; actionHref: string | null; actionLabel: st
 const navContent = {
   public: { homeHref: "/public", actionHref: "/public/auth", actionLabel: "Sign in", actionIcon: LogIn, links: [{ href: "/public#why", label: "Why it matters", icon: BookHeart }, { href: "/public#story", label: "Our story", icon: Heart }] },
   auth: { homeHref: "/public", actionHref: "/public", actionLabel: "Back to home", actionIcon: ArrowLeft, links: [] },
-  journal: { homeHref: "/users", actionHref: "/public", actionLabel: "Log out", actionIcon: LogOut, links: [{ href: "/users", label: "Memories", icon: BookHeart }, { href: "/users/capture", label: "Capture", icon: ImagePlus }, { href: "/users/studio", label: "Studio", icon: Sparkles }, { href: "/users/calendar", label: "Calendar", icon: CalendarDays }, { href: "/users/diary", label: "Diary", icon: NotebookPen }, { href: "/users/settings", label: "Settings", icon: Settings2 }] },
+  journal: { homeHref: "/users", actionHref: "/public", actionLabel: "Log out", actionIcon: LogOut, links: [{ href: "/users", label: "Memories", icon: BookHeart }, { href: "/users/capture", label: "Capture", icon: ImagePlus }, { href: "/users/memories", label: "Uploaded media", icon: Images }, { href: "/users/studio", label: "Studio", icon: Sparkles }, { href: "/users/calendar", label: "Calendar", icon: CalendarDays }, { href: "/users/diary", label: "Diary", icon: NotebookPen }, { href: "/users/settings", label: "Settings", icon: Settings2 }] },
 } satisfies Record<SiteNavProps["variant"], NavContent>;
 
 export function SiteNav({ variant }: SiteNavProps) {
   const { isNight, toggleTheme } = useTheme();
+  const router = useRouter();
   const content = navContent[variant];
   const ActionIcon = content.actionIcon;
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Unable to complete remote sign out.", error);
+    } finally {
+      await clearOfflineSnapshots().catch((error: unknown) => console.error("Unable to clear offline memories.", error));
+      router.replace("/public");
+    }
+  };
   const handleSectionClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     const hash = href.includes("#") ? href.split("#")[1] : null;
     if (variant === "journal" && hash && window.location.pathname === "/users") {
@@ -44,7 +59,7 @@ export function SiteNav({ variant }: SiteNavProps) {
           {content.links.map(({ href, label, icon: Icon }) => <Link key={href} href={href} onClick={(event) => handleSectionClick(event, href)} className="nav-link nav-icon-button" aria-label={label} data-tooltip={label}><Icon size={16} /><span className="sr-only">{label}</span></Link>)}
         </div>
         <button type="button" className="theme-toggle nav-icon-button" onClick={toggleTheme} aria-label={isNight ? "Switch to light mode" : "Switch to dark mode"} data-tooltip={isNight ? "Light mode" : "Dark mode"}>{isNight ? <Sun size={16} /> : <Moon size={16} />}<span className="sr-only">{isNight ? "Switch to light mode" : "Switch to dark mode"}</span></button>
-        {content.actionHref && ActionIcon ? <Link href={content.actionHref} className="nav-action nav-icon-button" aria-label={content.actionLabel ?? undefined} data-tooltip={content.actionLabel ?? undefined}><ActionIcon size={16} /><span className="sr-only">{content.actionLabel}</span></Link> : null}
+        {content.actionHref && ActionIcon ? variant === "journal" ? <button type="button" onClick={() => void handleSignOut()} className="nav-action nav-icon-button" aria-label={content.actionLabel ?? undefined} data-tooltip={content.actionLabel ?? undefined}><ActionIcon size={16} /><span className="sr-only">{content.actionLabel}</span></button> : <Link href={content.actionHref} className="nav-action nav-icon-button" aria-label={content.actionLabel ?? undefined} data-tooltip={content.actionLabel ?? undefined}><ActionIcon size={16} /><span className="sr-only">{content.actionLabel}</span></Link> : null}
       </div>
     </nav>
   );
