@@ -4,6 +4,7 @@ import { ArrowLeft, BookHeart, CalendarDays, Heart, ImagePlus, LogIn, LogOut, Mo
 import Link from "next/link";
 import type { MouseEvent } from "react";
 import { useTheme } from "../app/theme-provider";
+import Image from "next/image";
 
 type SiteNavProps = {
   variant: "public" | "auth" | "journal";
@@ -34,18 +35,25 @@ export function SiteNav({ variant }: SiteNavProps) {
   };
 
   return (
-    <nav className={variant === "journal" ? "journal-nav" : "site-nav"}>
-      <Link href={content.homeHref} className="flex items-center gap-2 text-rose-950" aria-label="Momenta home">
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-rose-500 text-white"><Heart size={17} fill="currentColor" /></span>
-        <span className="font-title text-xl font-semibold">Momenta</span>
-      </Link>
-      <div className="nav-tools">
-        <div className={variant === "journal" ? "nav-links journal-links" : "hidden items-center gap-8 text-sm font-medium text-rose-900/70 sm:flex"}>
-          {content.links.map(({ href, label, icon: Icon }) => <Link key={href} href={href} onClick={(event) => handleSectionClick(event, href)} className="nav-link nav-icon-button" aria-label={label} data-tooltip={label}><Icon size={16} /><span className="sr-only">{label}</span></Link>)}
-        </div>
-        <button type="button" className="theme-toggle nav-icon-button" onClick={toggleTheme} aria-label={isNight ? "Switch to light mode" : "Switch to dark mode"} data-tooltip={isNight ? "Light mode" : "Dark mode"}>{isNight ? <Sun size={16} /> : <Moon size={16} />}<span className="sr-only">{isNight ? "Switch to light mode" : "Switch to dark mode"}</span></button>
-        {content.actionHref && ActionIcon ? <Link href={content.actionHref} className="nav-action nav-icon-button" aria-label={content.actionLabel ?? undefined} data-tooltip={content.actionLabel ?? undefined}><ActionIcon size={16} /><span className="sr-only">{content.actionLabel}</span></Link> : null}
+  <nav className={variant === "journal" ? "journal-nav" : "site-nav"}>
+    <Link href={content.homeHref} className="flex items-center gap-2 text-rose-950" aria-label="Momenta home">
+      <Image
+        src="/momenta_logo.svg"
+        alt="Momenta"
+        width={36}
+        height={36}
+        priority
+        className="h-9 w-9"
+      />
+      <span className="font-title text-xl font-semibold">Momenta</span>
+    </Link>
+    <div className="nav-tools">
+      <div className={variant === "journal" ? "nav-links journal-links" : "hidden items-center gap-8 text-sm font-medium text-rose-900/70 sm:flex"}>
+        {content.links.map(({ href, label, icon: Icon }) => <Link key={href} href={href} onClick={(event) => handleSectionClick(event, href)} className="nav-link nav-icon-button" aria-label={label} data-tooltip={label}><Icon size={16} /><span className="sr-only">{label}</span></Link>)}
       </div>
-    </nav>
-  );
+      <button type="button" className="theme-toggle nav-icon-button" onClick={toggleTheme} aria-label={isNight ? "Switch to light mode" : "Switch to dark mode"} data-tooltip={isNight ? "Light mode" : "Dark mode"}>{isNight ? <Sun size={16} /> : <Moon size={16} />}<span className="sr-only">{isNight ? "Switch to light mode" : "Switch to dark mode"}</span></button>
+      {content.actionHref && ActionIcon ? <Link href={content.actionHref} className="nav-action nav-icon-button" aria-label={content.actionLabel ?? undefined} data-tooltip={content.actionLabel ?? undefined}><ActionIcon size={16} /><span className="sr-only">{content.actionLabel}</span></Link> : null}
+    </div>
+  </nav>
+);
 }

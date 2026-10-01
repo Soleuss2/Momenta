@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, Heart, LockKeyhole, Mail } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AmbientBackground } from "../../../components/ambient-background";
 import { SiteFooter } from "../../../components/site-footer";
@@ -42,7 +42,10 @@ function AuthPanel({ mode, onModeChange }: { mode: AuthMode; onModeChange: (mode
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError(error.message);
-      else router.push("/users");
+      else {
+        router.push("/users");
+        router.refresh();
+      }
     }
     setLoading(false);
   }
@@ -159,7 +162,7 @@ function AuthPanel({ mode, onModeChange }: { mode: AuthMode; onModeChange: (mode
   );
 }
 
-export default function AuthPage() {
+function AuthPageInner() {
   const [authMode, setAuthMode] = useState<AuthMode>("sign-up");
   const { isNight } = useTheme();
 
@@ -181,5 +184,13 @@ export default function AuthPage() {
       </ScrollReveal>
       <SiteFooter />
     </main>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthPageInner />
+    </Suspense>
   );
 }

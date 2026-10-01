@@ -33,8 +33,8 @@ export const metadata: Metadata = {
     title: "Momenta",
   },
   icons: {
-    icon: "/icon-192.png",
-    apple: "/icon-192.png",
+    icon: "/momenta_logo.svg",
+    apple: "/momenta_logo.svg",
   },
 };
 
