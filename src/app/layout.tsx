@@ -3,6 +3,7 @@ import { Fraunces, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { CursorLight } from "../components/cursor-light";
+import { ServiceWorkerRegistration } from "./service-worker-registration";
 import { ThemeProvider } from "./theme-provider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
+          <ServiceWorkerRegistration />
           <CursorLight />
           {children}
         </ThemeProvider>

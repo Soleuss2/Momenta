@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Momenta — Your Shared Love Journal',
     short_name: 'Momenta',
     description: 'A stylish memory space for your shared stories.',
-    start_url: '/',
+    start_url: '/users/memories',
     display: 'standalone',
     background_color: '#fff1f2', // matches your pink theme
     theme_color: '#e11d48',      // rose-600 to match your app
