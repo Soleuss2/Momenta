@@ -2,13 +2,11 @@
 
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { CalendarDays, Camera, Heart, MapPin, Play, Sparkles, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { JournalWorkspace } from "../../components/journal-workspace";
 import { SiteFooter } from "../../components/site-footer";
 import { SiteNav } from "../../components/site-nav";
 import { useTheme } from "../theme-provider";
-import { createClient } from "@/lib/supabase/client";
 
 type Memory = { id: number; title: string; date: string; location: string; description: string; tag: "Trips" | "Daily Life" | "Milestones"; color: string; image: string; videoUrl?: string };
 const memories: Memory[] = [
@@ -33,45 +31,8 @@ export default function UsersPage() {
   const prefersReducedMotion = useReducedMotion();
   const [activeFilter, setActiveFilter] = useState<Filter>("All");
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
-  const [authChecked, setAuthChecked] = useState(false);
-  const router = useRouter();
-  const supabase = createClient();
-
-  useEffect(() => {
-    let active = true;
-
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!active) return;
-      if (!user) {
-        router.replace("/public/auth?next=/users");
-      } else {
-        setAuthChecked(true);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) router.replace("/public/auth?next=/users");
-    });
-
-    return () => {
-      active = false;
-      subscription.unsubscribe();
-    };
-  }, [router, supabase]);
 
   const filteredMemories = activeFilter === "All" ? memories : memories.filter((memory) => memory.tag === activeFilter);
-
-  // Block rendering until we know the user is signed in.
-  if (!authChecked) {
-    return (
-      <main className={`journal-page ${isNight ? "is-night" : ""}`}>
-        <SiteNav variant="journal" />
-        <div className="journal-content flex min-h-[60vh] items-center justify-center">
-          <p className="text-pink-900/70">Checking your session…</p>
-        </div>
-      </main>
-    );
-  }
 
   return <main className={`journal-page ${isNight ? "is-night" : ""}`}><SiteNav variant="journal" /><Scene /><div className="journal-content"><section className="journal-hero"><motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="journal-glass-panel"><div className="journal-kicker"><Sparkles size={15} /> Our living love journal</div><h1 className="font-title text-5xl leading-tight text-pink-950 sm:text-7xl">A stylish memory space<br />for us, one moment at a time.</h1><p className="mt-5 max-w-2xl text-base leading-7 text-pink-900/80 sm:text-lg">Your shared place for videos, tiny milestones, and everyday stories worth keeping close.</p><div className="mt-7 flex flex-wrap gap-3"><a href="#memories" className="journal-primary"><Heart size={16} /> Explore memories</a><a href="#videos" className="journal-secondary"><Play size={16} /> Watch moments</a></div></motion.div></section>
 

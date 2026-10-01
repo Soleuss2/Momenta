@@ -5,7 +5,7 @@ type SiteFooterProps = {
   homeHref?: string;
 };
 
-export function SiteFooter({ homeHref = "/public" }: SiteFooterProps) {
+export function SiteFooter({ homeHref = "/" }: SiteFooterProps) {
   return (
     <footer className="site-footer">
       <div className="footer-brand-block">
@@ -19,13 +19,19 @@ export function SiteFooter({ homeHref = "/public" }: SiteFooterProps) {
       </div>
       <div className="footer-column">
         <span className="footer-heading">Explore</span>
-        <Link href="/public#why">Why it matters</Link>
-        <Link href="/public#story">Our story</Link>
+        <Link href="/#why">Why it matters</Link>
+        <Link href="/#story">Our story</Link>
       </div>
       <div className="footer-column">
         <span className="footer-heading">Journal</span>
-        <Link href="/public/auth">Create an account</Link>
+        <Link href="/auth">Create an account</Link>
         <Link href="/users">Open journal</Link>
+      </div>
+      <div className="footer-column">
+        <span className="footer-heading">Policies</span>
+        <Link href="/privacy">Privacy Policy</Link>
+        <Link href="/terms">Terms of Service</Link>
+        <Link href="/cookies">Cookie Policy</Link>
       </div>
       <div className="footer-note">
         <span>Made for memories, not metrics.</span>

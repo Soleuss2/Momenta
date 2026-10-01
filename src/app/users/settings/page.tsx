@@ -7,6 +7,8 @@ import { SiteNav } from "../../../components/site-nav";
 import { ScrollReveal } from "../../../components/scroll-reveal";
 import { useTheme } from "../../theme-provider";
 
+import { sanitizeDisplayName, sanitizeText } from "@/lib/sanitize";
+
 const settingsSections = [
   { title: "Your profile", id: "profile-settings", icon: UserRound },
   { title: "Journal preferences", id: "journal-settings", icon: SlidersHorizontal },
@@ -19,7 +21,53 @@ function Toggle({ label, description, checked, onChange }: { label: string; desc
 }
 
 function ProfileSettings() {
-  return <section id="profile-settings" className="settings-panel"><div className="settings-panel-heading"><div className="settings-icon"><UserRound size={18} /></div><div><h2>Profile</h2><p>How your names appear in the journal.</p></div></div><div className="settings-fields"><label>Journal name<input type="text" defaultValue="Alex & Jamie" /></label><label>Short note<input type="text" defaultValue="Our little corner of the world" /></label></div><button type="button" className="settings-save"><Check size={15} /> Save changes</button></section>;
+  const [journalName, setJournalName] = useState("Alex & Jamie");
+  const [shortNote, setShortNote] = useState("Our little corner of the world");
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    const cleanName = sanitizeDisplayName(journalName, 50);
+    const cleanNote = sanitizeText(shortNote, 200);
+    setJournalName(cleanName);
+    setShortNote(cleanNote);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  return (
+    <section id="profile-settings" className="settings-panel">
+      <div className="settings-panel-heading">
+        <div className="settings-icon"><UserRound size={18} /></div>
+        <div>
+          <h2>Profile</h2>
+          <p>How your names appear in the journal.</p>
+        </div>
+      </div>
+      <div className="settings-fields">
+        <label>
+          Journal name
+          <input
+            type="text"
+            maxLength={50}
+            value={journalName}
+            onChange={(e) => setJournalName(e.target.value)}
+          />
+        </label>
+        <label>
+          Short note
+          <input
+            type="text"
+            maxLength={200}
+            value={shortNote}
+            onChange={(e) => setShortNote(e.target.value)}
+          />
+        </label>
+      </div>
+      <button type="button" className="settings-save" onClick={handleSave}>
+        <Check size={15} /> {saved ? "Changes saved" : "Save changes"}
+      </button>
+    </section>
+  );
 }
 
 function JournalSettings({ autoSort, setAutoSort, weeklyNotes, setWeeklyNotes }: { autoSort: boolean; setAutoSort: (value: boolean) => void; weeklyNotes: boolean; setWeeklyNotes: (value: boolean) => void }) {
