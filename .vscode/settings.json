@@ -1,0 +1,20 @@
+{
+  "workbench.editor.customLabels.enabled": true,
+  "workbench.editor.customLabels.patterns": {
+    "**/src/app/page.tsx": "Landing",
+    "**/src/app/auth/page.tsx": "Auth",
+    "**/src/app/auth/check-email/page.tsx": "Check Email",
+    "**/src/app/users/page.tsx": "Journal Feed",
+    "**/src/app/users/capture/page.tsx": "Capture",
+    "**/src/app/users/studio/page.tsx": "Studio",
+    "**/src/app/users/calendar/page.tsx": "Calendar",
+    "**/src/app/users/diary/page.tsx": "Diary",
+    "**/src/app/users/settings/page.tsx": "Settings",
+    "**/src/app/privacy/page.tsx": "Privacy Policy",
+    "**/src/app/terms/page.tsx": "Terms of Service",
+    "**/src/app/cookies/page.tsx": "Cookie Policy",
+    "**/src/app/**/page.tsx": "${dirname} (page)",
+    "**/src/app/**/loading.tsx": "${dirname} (loading)"
+  },
+  "workbench.editor.labelFormat": "short"
+}

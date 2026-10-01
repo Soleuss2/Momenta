@@ -3,12 +3,14 @@
 import { ArrowRight, Heart, LockKeyhole, Mail } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AmbientBackground } from "../../../components/ambient-background";
-import { SiteFooter } from "../../../components/site-footer";
-import { SiteNav } from "../../../components/site-nav";
-import { ScrollReveal } from "../../../components/scroll-reveal";
-import { useTheme } from "../../theme-provider";
+import { AmbientBackground } from "../../components/ambient-background";
+import { SiteFooter } from "../../components/site-footer";
+import { SiteNav } from "../../components/site-nav";
+import { ScrollReveal } from "../../components/scroll-reveal";
+import { useTheme } from "../theme-provider";
 import { createClient } from "@/lib/supabase/client";
+
+import { sanitizeEmail, sanitizePassword, sanitizeDisplayName } from "@/lib/sanitize";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -25,26 +27,52 @@ function AuthPanel({ mode, onModeChange }: { mode: AuthMode; onModeChange: (mode
 
   async function handleEmailAuth(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { display_name: name || undefined },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) setError(error.message);
-      else router.push("/public/auth/check_email");
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setError(error.message);
-      else router.push("/users");
+    // 1. Sanitize & Validate Email
+    const emailResult = sanitizeEmail(email);
+    if (!emailResult.valid) {
+      setError(emailResult.error ?? "Invalid email address");
+      return;
     }
-    setLoading(false);
+
+    // 2. Sanitize & Validate Password
+    const passwordResult = sanitizePassword(password);
+    if (!passwordResult.valid) {
+      setError(passwordResult.error ?? "Invalid password");
+      return;
+    }
+
+    // 3. Sanitize Display Name (for sign up)
+    const cleanName = sanitizeDisplayName(name);
+
+    setLoading(true);
+
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email: emailResult.value,
+          password: passwordResult.value,
+          options: {
+            data: { display_name: cleanName || undefined },
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+        if (error) setError(error.message);
+        else router.push("/auth/check-email");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: emailResult.value,
+          password: passwordResult.value,
+        });
+        if (error) setError(error.message);
+        else router.push("/users");
+      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleOAuth(provider: "google" | "apple") {
