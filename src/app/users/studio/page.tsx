@@ -3,6 +3,7 @@
 import { ChevronLeft, Film, LockKeyhole, Play, Sparkles } from "lucide-react";
 import { SiteFooter } from "../../../components/site-footer";
 import { SiteNav } from "../../../components/site-nav";
+import { AmbientBackground } from "../../../components/ambient-background";
 import { ScrollReveal } from "../../../components/scroll-reveal";
 import { useTheme } from "../../theme-provider";
 
@@ -83,6 +84,7 @@ export default function StudioPage() {
 
   return (
     <main className={`feature-page ${isNight ? "is-night" : ""}`}>
+      <AmbientBackground />
       <SiteNav variant="journal" />
       <div className="feature-page-shell">
         <ScrollReveal direction="left">
