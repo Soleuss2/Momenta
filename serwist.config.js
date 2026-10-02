@@ -7,5 +7,9 @@ const revision = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf-8" }).
 export default serwist({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
-  additionalPrecacheEntries: [{ url: "/", revision }],
+  additionalPrecacheEntries: [
+    { url: "/", revision },
+    { url: "/users/capture", revision },
+    { url: "/users/memories", revision },
+  ],
 });
