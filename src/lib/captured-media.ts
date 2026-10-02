@@ -18,6 +18,9 @@ export function formatMediaError(error: unknown): string {
   const value = error as Record<string, unknown>;
   const code = typeof value.code === "string" ? value.code : "";
   const message = typeof value.message === "string" ? value.message : "";
+  if (/column .*caption.*(does not exist|not found)/i.test(message)) {
+    return "Supabase is missing the caption column. Run supabase/migrations/20261002000000_media_captions.sql in the Supabase Dashboard SQL Editor, then reload the app.";
+  }
   if (code === "PGRST205" || code === "42P01" || /captured_media.*(not found|does not exist)/i.test(message)) {
     return "Supabase is missing public.captured_media. Run supabase/migrations/20261001000000_captured_media.sql in the Supabase Dashboard SQL Editor, then retry this staged upload.";
   }
