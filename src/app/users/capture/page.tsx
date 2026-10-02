@@ -32,13 +32,11 @@ function CaptureHeading() {
 }
 
 function MediaPreview({ file }: { file: File }) {
-  const [url, setUrl] = useState<string | null>(null);
+  const [url] = useState(() => URL.createObjectURL(file));
 
   useEffect(() => {
-    const objectUrl = URL.createObjectURL(file);
-    setUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
+    return () => URL.revokeObjectURL(url);
+  }, [url]);
 
   if (!url) return <span className="capture-preview-loading">Preparing preview</span>;
   return file.type.startsWith("video/") ? <video src={url} muted playsInline controls /> : <img src={url} alt={`Preview of ${file.name}`} />;
@@ -211,7 +209,7 @@ function CaptureContent() {
                   <small>{(file.size / (1024 * 1024)).toFixed(1)} MB</small>
                 </button>
                 <div className="capture-review-meta">
-                  <div className="capture-review-file"><strong>{file.type.startsWith("image/") ? "Photo memory" : "Video memory"}</strong><small>{new Date(file.lastModified || Date.now()).toLocaleDateString()}</small><label><span>Caption</span><input value={captions[fileKey(file)] ?? ""} maxLength={180} placeholder="Add a note about this moment" onChange={(event) => setCaptions((current) => ({ ...current, [fileKey(file)]: event.target.value }))} /></label></div>
+                  <div className="capture-review-file"><strong>{file.type.startsWith("image/") ? "Photo memory" : "Video memory"}</strong><small>{file.lastModified > 0 ? new Date(file.lastModified).toLocaleDateString() : "Selected just now"}</small><label><span>Caption</span><input value={captions[fileKey(file)] ?? ""} maxLength={180} placeholder="Add a note about this moment" onChange={(event) => setCaptions((current) => ({ ...current, [fileKey(file)]: event.target.value }))} /></label></div>
                   <button type="button" className="capture-review-remove" aria-label="Remove memory" disabled={isUploading} onClick={() => { setFiles((current) => current.filter((selected) => selected !== file)); setCaptions((current) => { const next = { ...current }; delete next[fileKey(file)]; return next; }); setIsConfirmOpen(false); }}><Trash2 size={14} /></button>
                 </div>
               </article>
