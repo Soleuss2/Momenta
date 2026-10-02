@@ -71,7 +71,7 @@ export async function syncOfflineMedia(
 ): Promise<{ snapshot: OfflineSnapshot; uncachedCount: number }> {
   const { data, error } = await supabase
     .from("captured_media")
-    .select("id,user_id,storage_path,media_kind,file_name,mime_type,file_size,captured_at,uploaded_at")
+    .select("id,user_id,storage_path,media_kind,file_name,caption,mime_type,file_size,captured_at,uploaded_at")
     .eq("user_id", userId)
     .order("captured_at", { ascending: false })
     .order("uploaded_at", { ascending: false });

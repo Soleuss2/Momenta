@@ -4,6 +4,7 @@ export type CapturedMediaRecord = {
   storage_path: string;
   media_kind: "photo" | "video";
   file_name: string;
+  caption: string | null;
   mime_type: string;
   file_size: number;
   captured_at: string;

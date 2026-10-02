@@ -48,25 +48,6 @@ export function SiteNav({ variant }: SiteNavProps) {
     }
   };
 
-  const handleLogoutClick = () => {
-    setShowLogoutConfirm(true);
-  };
-
-  const confirmLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
-      setShowLogoutConfirm(false);
-      router.replace("/auth");
-    } catch {
-      // Fallback redirect if network error
-      router.replace("/auth");
-    } finally {
-      setIsLoggingOut(false);
-    }
-  };
-
   return (
     <>
       <nav className={variant === "journal" ? "journal-nav" : "site-nav"}>
@@ -89,7 +70,7 @@ export function SiteNav({ variant }: SiteNavProps) {
             <button
               type="button"
               className="nav-action nav-icon-button text-rose-700 hover:text-rose-900"
-              onClick={handleLogoutClick}
+              onClick={() => void handleSignOut()}
               aria-label="Log out"
               data-tooltip="Log out"
             >
@@ -102,9 +83,7 @@ export function SiteNav({ variant }: SiteNavProps) {
             </Link>
           ) : null}
         </div>
-        <button type="button" className="theme-toggle nav-icon-button" onClick={toggleTheme} aria-label={isNight ? "Switch to light mode" : "Switch to dark mode"} data-tooltip={isNight ? "Light mode" : "Dark mode"}>{isNight ? <Sun size={16} /> : <Moon size={16} />}<span className="sr-only">{isNight ? "Switch to light mode" : "Switch to dark mode"}</span></button>
-        {content.actionHref && ActionIcon ? variant === "journal" ? <button type="button" onClick={() => void handleSignOut()} className="nav-action nav-icon-button" aria-label={content.actionLabel ?? undefined} data-tooltip={content.actionLabel ?? undefined}><ActionIcon size={16} /><span className="sr-only">{content.actionLabel}</span></button> : <Link href={content.actionHref} className="nav-action nav-icon-button" aria-label={content.actionLabel ?? undefined} data-tooltip={content.actionLabel ?? undefined}><ActionIcon size={16} /><span className="sr-only">{content.actionLabel}</span></Link> : null}
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }
