@@ -87,6 +87,8 @@ function StudioContent() {
   const [items, setItems] = useState<StudioItem[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [reordering, setReordering] = useState(false);
+  const [reorderIndex, setReorderIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -170,6 +172,17 @@ function StudioContent() {
       return [...current, item];
     });
     setActiveIndex(0);
+    const itemIndex = availableItems.findIndex((i) => i.id === item.id);
+    if (itemIndex >= 0) setReorderIndex(itemIndex);
+  };
+
+  const reorderItem = (fromIndex: number, toIndex: number) => {
+    setItems((current) => {
+      const cloned = [...current];
+      const [moved] = cloned.splice(fromIndex, 1);
+      cloned.splice(toIndex, 0, moved);
+      return cloned;
+    });
   };
 
   const exportCompilation = async () => {
@@ -284,6 +297,16 @@ function StudioContent() {
             <option value="quiet">Quiet and cinematic</option>
           </select>
         </label>
+        <label>
+          Edit order
+          <button
+            type="button"
+            className={reordering ? "workspace-primary" : "workspace-secondary"}
+            onClick={() => setReordering((r) => !r)}
+          >
+            {reordering ? "Disable reorder" : "Edit order"}
+          </button>
+        </label>
         <div className="studio-settings-note"><Sparkles size={16} /><p><strong>{mood === "warm" ? "Warm and nostalgic" : mood === "bright" ? "Bright and playful" : "Quiet and cinematic"}</strong><span>The preview automatically selects a balanced mix of your moments.</span></p></div>
         <button type="button" className="workspace-primary" disabled={isLoading || items.length === 0} onClick={() => { setIsPlaying(true); setIsPreviewOpen(true); }}>
           <Sparkles size={16} /> Play automatic preview
@@ -293,10 +316,93 @@ function StudioContent() {
           <div className="studio-selection-list">
             {availableItems.map((item) => {
               const included = items.some((selected) => selected.id === item.id);
-              return <button type="button" key={item.id} className={`studio-selection-item ${included ? "included" : ""}`} aria-pressed={included} onClick={() => toggleItem(item)} disabled={!included && items.length >= 12}>
-                <span className="studio-selection-thumb">{item.media_kind === "video" ? <video src={item.previewUrl} muted playsInline preload="metadata" /> : <img src={item.previewUrl} alt="" />}<span>{included ? <Check size={12} /> : <Plus size={12} />}</span></span>
-                <span><strong>{item.caption || (item.media_kind === "photo" ? "Photo memory" : "Video memory")}</strong><small>{new Date(item.captured_at).toLocaleDateString()}</small></span>
-              </button>;
+              const itemIndex = availableItems.findIndex((i) => i.id === item.id);
+              
+              return (
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`studio-selection-item ${included ? "included" : ""}`}
+                  aria-pressed={included}
+                  onClick={() => { if (!reordering) toggleItem(item); else setReorderIndex(itemIndex); }}
+                  disabled={!included && items.length >= 12}
+                  style={{ cursor: reordering ? "grab" : "pointer" }}
+                >
+                  {reordering ? (
+                    <>
+                      <span
+                        className="studio-selection-thumb"
+                        style={{ cursor: "grab", userSelect: "none" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {item.media_kind === "video" ? (
+                          <video src={item.previewUrl} muted playsInline preload="metadata" />
+                        ) : (
+                          <img src={item.previewUrl} alt="" />
+                        )}
+                        {included ? <Check size={12} /> : <Plus size={12} />}
+                      </span>
+                      <span
+                        className="studio-selection-reorder"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          reorderItem(itemIndex, itemIndex);
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3 h-3 text-gray-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M9.75 5.75a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 .75-.75zm0 3a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 .75-.75zm0 3a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 .75-.75z" />
+                        </svg>
+                      </span>
+                      <span className="studio-selection-reorder-arrows">
+                        <button
+                          type="button"
+                          className="studio-reorder-arrow"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            reorderItem(itemIndex, Math.max(0, itemIndex - 1));
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-2 h-2"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path d="M7.293 12.707a1 1 0 0 1 0 1.414l-3.293 3.293a1 1 0 0 1-1.414-1.414l4-4a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1-1.414 1.414z" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          className="studio-reorder-arrow"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            reorderItem(itemIndex, Math.min(items.length - 1, itemIndex + 1));
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-2 h-2"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path d="M12.707 7.293a1 1 0 0 0 1.414 0l4 4a1 1 0 0 0 0 1.414l-4 4a1 1 0 0 0-1.414-1.414l-3.293-3.293a1 1 0 0 0 0-1.414l3.293-3.293a1 1 0 0 1 1.414 0z" />
+                          </svg>
+                        </button>
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="studio-selection-thumb">{item.media_kind === "video" ? <video src={item.previewUrl} muted playsInline preload="metadata" /> : <img src={item.previewUrl} alt="" />}<span>{included ? <Check size={12} /> : <Plus size={12} />}</span></span>
+                      <span><strong>{item.caption || (item.media_kind === "photo" ? "Photo memory" : "Video memory")}</strong><small>{new Date(item.captured_at).toLocaleDateString()}</small></span>
+                    </>
+                  )}
+                </button>
+              );
             })}
           </div>
         </div>
